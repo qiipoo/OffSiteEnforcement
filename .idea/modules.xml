@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../FileSplit/.idea/FileSplit.iml" filepath="$PROJECT_DIR$/../FileSplit/.idea/FileSplit.iml" />
       <module fileurl="file://$PROJECT_DIR$/../IDS/.idea/IDS.iml" filepath="$PROJECT_DIR$/../IDS/.idea/IDS.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Zhifa.iml" filepath="$PROJECT_DIR$/.idea/Zhifa.iml" />
     </modules>
