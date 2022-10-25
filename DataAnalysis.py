@@ -6,9 +6,11 @@ import copy
 import time
 import datetime
 import re
+import glob
 
 # 文件定义
-input_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\增量\9.10-9.30数据.csv'
+input_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\增量\外省入北京出 9.13-10.13 客车明细\*.txt'
+
 output_total_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\OUTPUT\车辆汇总表.csv'
 output_detail_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\OUTPUT\车辆明细表.csv'
 
@@ -16,23 +18,32 @@ except_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\审批数据\c
 except_star_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\审批数据\comm_带星号车.csv'
 
 
+#  'ch',  'cx',   'rk',   'rksj',    'ck',    'gs',     'cksj'
+# '车牌', '车型', '入口站', '入口时间', '出口站', '所在高速', '出口时间'
+input_data = pd.DataFrame(data=None, columns=['ch', 'cx', 'rk', 'rksj', 'ck', 'gs', 'cksj'])
+
+input_files = glob.glob(input_file)
+
 # 文件读取
-input_data = pd.read_csv(input_file, encoding="utf-8", keep_default_na=False)
+input_data_lst = []
+for idx, in_file in enumerate(input_files):
+    in_data = pd.read_csv(in_file, encoding="utf-8", keep_default_na=False)
+    input_data_lst.append(in_data)
+input_data = pd.concat(input_data_lst)
 except_data = pd.read_csv(except_file, encoding="utf-8", na_filter=False)
 except_star_data = pd.read_csv(except_star_file, encoding="utf-8")
-
 
 # 过滤条件
 set_exp_data = set(except_data['车牌号'].tolist())
 set_exp_star_data = set(except_star_data['号牌号码'].tolist())
 # '客一', '客二', '客三', '客四'
-lst_cx = ['客一', '客二', '客三']
+lst_cx = ['客一']
 lst_rk = []
 lst_ck = ['北京京沪廊坊站']
 set_cx = set(lst_cx)
 set_rk = set(lst_rk)
 set_ck = set(lst_ck)
-
+filter_cnt = 4
 
 # 统计操作
 output_total_data = {}
@@ -189,11 +200,9 @@ for idx, itr in enumerate(input_data.itertuples(), start=1):
     output_data_cnt.update({data_key: data_cnt})
     output_detail_data.append([ch, cx, rk, rksj_dt, rksj_tm, rksj_hour, ck, gs, cksj_dt, cksj_tm, cksj_hour])
 
-
 # 排序
 sorted_data_cnt = sorted(output_data_cnt.items(), key=lambda x: x[1], reverse=True)
 sorted_detail_data = sorted(output_detail_data, key=lambda x: (x[0], x[2], x[3], x[4]), reverse=True)
-
 
 # csv汇总文件输出
 csv_total_title = ('序号', '车牌号', '车辆类型',
@@ -208,6 +217,10 @@ with open(output_total_file, 'w') as f:
     for idx, a_key in enumerate(sorted_data_cnt):
         # print("[%s] Total Writing [%d/%d]"
         #       % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), (idx + 1), len(output_total_data.keys())))
+
+        # 按次数过滤
+        if a_key[1] < filter_cnt:
+            continue
 
         one_data = output_total_data.get(a_key[0])
         f.write('%d,' % (idx + 1))
