@@ -8,12 +8,12 @@ import datetime
 import re
 
 # 文件定义
-input_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\增量\9.10-9.30数据.csv'
-output_total_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\OUTPUT\车辆汇总表.csv'
-output_detail_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\OUTPUT\车辆明细表.csv'
+input_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\增量\9.10-9.30数据.csv'
+output_total_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\OUTPUT\车辆汇总表.csv'
+output_detail_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\OUTPUT\车辆明细表.csv'
 
-except_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\审批数据\comm_ALL审批数据.csv'
-except_star_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据\审批数据\comm_带星号车.csv'
+except_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\审批数据\comm_ALL审批数据.csv'
+except_star_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\审批数据\comm_带星号车.csv'
 
 
 # 文件读取
