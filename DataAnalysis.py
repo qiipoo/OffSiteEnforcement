@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os.path
 import pandas as pd
 import numpy as np
 import math
@@ -9,20 +10,24 @@ import re
 import glob
 
 # 文件定义
-input_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\增量\外省入北京出 9.13-10.13 客车明细\*.txt'
+input_path = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\增量'
+output_path = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\OUTPUT'
+except_path = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\审批数据'
 
-output_total_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\OUTPUT\车辆汇总表.csv'
-output_detail_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\OUTPUT\车辆明细表.csv'
+input_file = r'*.txt'
 
-except_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\审批数据\comm_ALL审批数据.csv'
-except_star_file = r'C:\Users\JT-0919\Desktop\WORK\执法项目\09.数据\审批数据\comm_带星号车.csv'
+output_total_file = r'车辆汇总表.csv'
+output_detail_file = r'车辆明细表.csv'
+
+except_file = r'comm_ALL审批数据.csv'
+except_star_file = r'comm_带星号车.csv'
 
 
-#  'ch',  'cx',   'rk',   'rksj',    'ck',    'gs',     'cksj'
-# '车牌', '车型', '入口站', '入口时间', '出口站', '所在高速', '出口时间'
-input_data = pd.DataFrame(data=None, columns=['ch', 'cx', 'rk', 'rksj', 'ck', 'gs', 'cksj'])
+#  'sf',  'ch',  'cx',   'rk',   'rksj',    'ck',    'gs',     'cksj'
+# '省份', '车牌', '车型', '入口站', '入口时间', '出口站', '所在高速', '出口时间'
+input_data = pd.DataFrame(data=None, columns=['sf', 'ch', 'cx', 'rk', 'rksj', 'ck', 'gs', 'cksj'])
 
-input_files = glob.glob(input_file)
+input_files = glob.glob(os.path.join(input_path, input_file))
 
 # 文件读取
 input_data_lst = []
@@ -30,8 +35,8 @@ for idx, in_file in enumerate(input_files):
     in_data = pd.read_csv(in_file, encoding="utf-8", keep_default_na=False)
     input_data_lst.append(in_data)
 input_data = pd.concat(input_data_lst)
-except_data = pd.read_csv(except_file, encoding="utf-8", na_filter=False)
-except_star_data = pd.read_csv(except_star_file, encoding="utf-8")
+except_data = pd.read_csv(os.path.join(except_path, except_file), encoding="utf-8", na_filter=False)
+except_star_data = pd.read_csv(os.path.join(except_path, except_star_file), encoding="utf-8")
 
 # 过滤条件
 set_exp_data = set(except_data['车牌号'].tolist())
@@ -52,14 +57,14 @@ output_data_cnt = {}
 for idx, itr in enumerate(input_data.itertuples(), start=1):
     # print("[%s] Loading [%d/%d]" % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), (idx + 1), len(input_data)))
 
-    # sf = ''
-    ch = itr[1]
-    cx = itr[2]
-    rk = itr[3]
-    rksj = itr[4]
-    ck = itr[5]
-    gs = itr[6]
-    cksj = itr[7]
+    sf = itr[1]
+    ch = itr[2]
+    cx = itr[3]
+    rk = itr[4]
+    rksj = itr[5]
+    ck = itr[6]
+    gs = itr[7]
+    cksj = itr[8]
 
     rksj_dt = ''
     rksj_tm = ''
@@ -78,19 +83,19 @@ for idx, itr in enumerate(input_data.itertuples(), start=1):
         continue
 
     if isinstance(ch, float) or ch == '':
-        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s]' % itr)
+        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s, %s, %s]' % itr)
         continue
 
     if isinstance(cx, float) or cx == '':
-        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s]' % itr)
+        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s, %s, %s]' % itr)
         continue
 
     if ch in set_exp_data:
-        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s]' % itr)
+        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s, %s, %s]' % itr)
         continue
 
     if ch[0:6] in set_exp_star_data:
-        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s]' % itr)
+        print('Skip [%s, %s, %s, %s, %s, %s, %s, %s, %s, %s]' % itr)
         continue
 
     if isinstance(rksj, str):
@@ -198,11 +203,11 @@ for idx, itr in enumerate(input_data.itertuples(), start=1):
 
     output_total_data.update({data_key: one_data})
     output_data_cnt.update({data_key: data_cnt})
-    output_detail_data.append([ch, cx, rk, rksj_dt, rksj_tm, rksj_hour, ck, gs, cksj_dt, cksj_tm, cksj_hour])
+    output_detail_data.append([sf, ch, cx, rk, rksj_dt, rksj_tm, rksj_hour, ck, gs, cksj_dt, cksj_tm, cksj_hour])
 
 # 排序
 sorted_data_cnt = sorted(output_data_cnt.items(), key=lambda x: x[1], reverse=True)
-sorted_detail_data = sorted(output_detail_data, key=lambda x: (x[0], x[2], x[3], x[4]), reverse=True)
+sorted_detail_data = sorted(output_detail_data, key=lambda x: (x[0], x[1], x[3], x[4], x[5]), reverse=True)
 
 # csv汇总文件输出
 csv_total_title = ('序号', '车牌号', '车辆类型',
@@ -211,7 +216,7 @@ csv_total_title = ('序号', '车牌号', '车辆类型',
                    '进京入口', '进京入口活跃次数', '进京入口活跃天数',
                    '进京出口', '进京出口所在高速', '进京出口活跃次数', '进京出口活跃天数')
 
-with open(output_total_file, 'w') as f:
+with open(os.path.join(output_path, output_total_file), 'w') as f:
     f.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % csv_total_title)
 
     for idx, a_key in enumerate(sorted_data_cnt):
@@ -315,19 +320,17 @@ with open(output_total_file, 'w') as f:
 
 
 # csv明细文件输出
-csv_detail_title = ('编号', '车牌', '车型',
+csv_detail_title = ('编号', '省份', '车牌', '车型',
                    '入口', '入口日期', '入口时间', '入口几点',
                    '出口', '所属高速', '出口日期', '出口时间', '出口几点')
 
-with open(output_detail_file, 'w') as f:
-    f.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % csv_detail_title)
+with open(os.path.join(output_path, output_detail_file), 'w') as f:
+    f.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % csv_detail_title)
 
     for idx, a_detail_data in enumerate(sorted_detail_data):
         # print("[%s] Detail Writing [%d/%d]"
         #       % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), (idx + 1), len(sorted_detail_data)))
 
-        if idx == 42:
-            print()
         f.write('%d,' % (idx + 1))
         f.write(','.join(a_detail_data))
         f.write('\n')
