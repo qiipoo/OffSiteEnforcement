@@ -54,7 +54,6 @@ for idx, itr in enumerate(input_data.itertuples(), start=0):
         continue
 
     data_key = ch + '-' + str(up_dt) + '-' + str(down_dt)
-    print(data_key)
     data_value = output_detail_data.get(data_key)
     if data_value is None:
         one_data = {

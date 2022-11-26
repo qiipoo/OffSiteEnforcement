@@ -8,7 +8,7 @@ from openpyxl import Workbook, worksheet, cell, load_workbook
 
 def open_file():
 
-    work_path = 'C:\\Users\\JT-0919\\Desktop\\WORK\\执法项目\\数据'
+    work_path = r'C:\Users\JT-0919\Desktop\WORK\执法项目\数据'
 
     os.chdir(work_path)
 
